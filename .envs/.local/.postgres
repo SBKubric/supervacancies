@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=supervacancies
+POSTGRES_USER=nJPAiRWccUTtsqyHCPwusRoXtEGducrj
+POSTGRES_PASSWORD=gXA2J6MdRRa37jAAKG9Mk93lsUFrL39eHqCCENrGHL55UO2fmptya47HlDZbg8mF
