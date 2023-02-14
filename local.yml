@@ -1,8 +1,10 @@
-version: '3'
+version: "3.8"
+
+name: "supervacancies"
 
 volumes:
-  supervacancies_local_postgres_data: {}
-  supervacancies_local_postgres_data_backups: {}
+  postgres_data: {}
+  postgres_data_backups: {}
 
 services:
   django:
@@ -10,7 +12,7 @@ services:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
     image: supervacancies_local_django
-    container_name: supervacancies_local_django
+    container_name: local_django
     depends_on:
       - postgres
       - mailhog
@@ -28,16 +30,16 @@ services:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
     image: supervacancies_production_postgres
-    container_name: supervacancies_local_postgres
+    container_name: local_postgres
     volumes:
-      - supervacancies_local_postgres_data:/var/lib/postgresql/data
-      - supervacancies_local_postgres_data_backups:/backups
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_backups:/backups
     env_file:
       - ./.envs/.local/.postgres
 
   docs:
-    image: supervacancies_local_docs
-    container_name: supervacancies_local_docs
+    image: local_docs
+    container_name: local_docs
     build:
       context: .
       dockerfile: ./compose/local/docs/Dockerfile
@@ -53,6 +55,6 @@ services:
 
   mailhog:
     image: mailhog/mailhog:v1.0.0
-    container_name: supervacancies_local_mailhog
+    container_name: local_mailhog
     ports:
       - "8025:8025"

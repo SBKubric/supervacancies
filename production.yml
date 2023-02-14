@@ -1,9 +1,11 @@
-version: '3'
+version: "3.8"
+
+name: "supervacancies"
 
 volumes:
-  production_postgres_data: {}
-  production_postgres_data_backups: {}
-  production_traefik: {}
+  postgres_data: {}
+  postgres_data_backups: {}
+  traefik: {}
 
 services:
   django:
@@ -11,7 +13,7 @@ services:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
 
-    image: supervacancies_production_django
+    image: production_django
     depends_on:
       - postgres
       - redis
@@ -24,10 +26,10 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: supervacancies_production_postgres
+    image: production_postgres
     volumes:
-      - production_postgres_data:/var/lib/postgresql/data
-      - production_postgres_data_backups:/backups
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_backups:/backups
     env_file:
       - ./.envs/.production/.postgres
 
@@ -35,14 +37,15 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/traefik/Dockerfile
-    image: supervacancies_production_traefik
+    image: production_traefik
     depends_on:
       - django
     volumes:
-      - production_traefik:/etc/traefik/acme
+      - traefik:/etc/traefik/acme
+      -
     ports:
-      - "0.0.0.0:80:80"
-      - "0.0.0.0:443:443"
+      - "80:80"
+      - "443:443"
 
   redis:
     image: redis:6
@@ -54,4 +57,4 @@ services:
     env_file:
       - ./.envs/.production/.django
     volumes:
-      - production_postgres_data_backups:/backups:z
+      - postgres_data_backups:/backups:z
