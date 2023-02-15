@@ -1,0 +1,7 @@
+tee /etc/yum.repos.d/pgdg.repo<<EOF
+[pgdg14]
+name=PostgreSQL 14 for RHEL/CentOS 7 - x86_64
+baseurl=http://download.postgresql.org/pub/repos/yum/14/redhat/rhel-7-x86_64
+enabled=1
+gpgcheck=0
+EOF

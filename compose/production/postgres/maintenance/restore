@@ -20,10 +20,15 @@ source "${working_dir}/_sourced/constants.sh"
 source "${working_dir}/_sourced/messages.sh"
 
 
-if [[ -z ${1+x} ]]; then
-    message_error "Backup filename is not specified yet it is a required parameter. Make sure you provide one and try again."
+if [[ -z ${1+x} ]] && [[ -f "${BACKUP_DIR_PATH}/latest.sql.gz" ]]; then
+  backup_filename="${BACKUP_DIR_PATH}/latest.sql.gz"
+elif [[ -z ${1+x} ]]; then
+    message_error "Backup filename is not specified nor file ${BACKUP_DIR_PATH}/latest.sql.gz exists. Please, provide one of them and try again."
     exit 1
+else
+  backup_filename="${BACKUP_DIR_PATH}/${1}"
 fi
+
 backup_filename="${BACKUP_DIR_PATH}/${1}"
 if [[ ! -f "${backup_filename}" ]]; then
     message_error "No backup with the specified filename found. Check out the 'backups' maintenance script output to see if there is one and try again."

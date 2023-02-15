@@ -1,6 +1,6 @@
 # SuperVacancies
 
-Sample vacancy management service
+Sample vacancy management service. You can view the demo [here](supervacancies.sbkubric.com)
 
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Black code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
@@ -17,7 +17,15 @@ It's really simple. You need only 3 steps.
 
 - Set up [Docker desktop](https://www.docker.com/products/docker-desktop/)
 - Clone this repo with `git clone https://github.com/SBKubric/supervacancies.git`
-- Run `docker compose -f local.yml up -d --build`
+- Run `docker compose -f local.yml up -d`
+
+## Continous integration & Deploy
+
+This project is configured for CI/CD Github Actions pipeline.
+
+Every time a PR has been requested, Github Actions runs CI pipeline that includes linting and tests.
+
+When the PR has been merged, Github Actions starts another piplene: CD to deliver app to the demo site.
 
 ## Settings
 

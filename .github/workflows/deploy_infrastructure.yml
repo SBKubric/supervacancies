@@ -1,0 +1,72 @@
+name: Setup infrastracture
+
+on:
+  workflow_dispatch:
+  on:
+    release:
+      types: [published]
+
+concurrency: production
+
+jobs:
+  delivery:
+    needs: [tests]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Github Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create .env files
+        run: |
+          mkdir .envs/.production
+          echo ${{ secrets.django }} | base64 --decode > .envs/.production/.django
+          echo ${{ secrets.postgres }} | base64 --decode > .envs/.production/.postgres
+
+      - name: Build the Stack
+        run: docker-compose -f production.yml build traefik postgres awscli
+
+      - name: Build the Stack
+        run: docker-compose -f production.yml push traefik postgres awscli
+
+      - name: copy .env files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ vars.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_SECRET_KEY }}
+          source: "./.envs/*"
+          target: "."
+
+      - name: copy .compose files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ vars.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_SECRET_KEY }}
+          source: "./*.yml"
+          target: "."
+
+      - name: deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_SECRET_KEY }}
+          script: |
+            docker compose -f production.yml pull
+            docker compose -f production.yml up -d
+            docker system prune -f

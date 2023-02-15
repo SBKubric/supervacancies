@@ -13,7 +13,7 @@ services:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
 
-    image: production_django
+    image: ghcr.io/sbkubric/supervacancies-django
     depends_on:
       - postgres
       - redis
@@ -26,7 +26,7 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: production_postgres
+    image: ghcr.io/sbkubric/supervacancies-postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - postgres_data_backups:/backups
@@ -37,12 +37,13 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/traefik/Dockerfile
-    image: production_traefik
+    image: ghcr.io/sbkubric/supervacancies-traefik
     depends_on:
       - django
     volumes:
       - traefik:/etc/traefik/acme
-      -
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
     ports:
       - "80:80"
       - "443:443"
@@ -54,6 +55,7 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/aws/Dockerfile
+    image: ghcr.io/sbkubric/supervacancies-traefik
     env_file:
       - ./.envs/.production/.django
     volumes:
