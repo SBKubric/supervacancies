@@ -34,10 +34,10 @@ jobs:
           echo ${{ secrets.postgres }} | base64 --decode > .envs/.production/.postgres
 
       - name: Build the Stack
-        run: docker-compose -f production.yml build traefik postgres awscli
+        run: docker compose -f production.yml build traefik postgres awscli
 
-      - name: Build the Stack
-        run: docker-compose -f production.yml push traefik postgres awscli
+      - name: Push the Stack
+        run: docker compose -f production.yml push traefik postgres awscli
 
       - name: copy .env files
         uses: appleboy/scp-action@master

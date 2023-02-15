@@ -1,10 +1,5 @@
 name: CI
 
-# Enable Buildkit and let compose use it to speed up image building
-env:
-  DOCKER_BUILDKIT: 1
-  COMPOSE_DOCKER_CLI_BUILD: 1
-
 on:
   workflow_dispatch:
   workflow_call:
@@ -55,13 +50,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Up the Stack
-        run: docker-compose -f local.yml -f ci.override.yml up django -d --build
+        run: docker compose -f local.yml -f ci.override.yml up django -d --build
 
       - name: Run DB Migrations
-        run: docker-compose -f local.yml -f ci.override.yml exec django python manage.py migrate
+        run: docker compose -f local.yml -f ci.override.yml exec django python manage.py migrate
 
       - name: Run Django Tests
-        run: docker-compose -f local.yml -f ci.override.yml exec django pytest
+        run: docker compose -f local.yml -f ci.override.yml exec django pytest
 
       - name: Tear down the Stack
-        run: docker-compose -f local.yml -f ci.override.yml down
+        run: docker compose -f local.yml -f ci.override.yml down

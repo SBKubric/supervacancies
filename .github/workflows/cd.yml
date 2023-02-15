@@ -39,11 +39,11 @@ jobs:
           echo ${{ secrets.postgres }} | base64 --decode > .envs/.production/.postgres
           echo ${{ secrets.traefik }} | base64 --decode > .envs/.production/.traefik
 
-      - name: Build the Stack
-        run: docker-compose -f production.yml build django
+      - name: Build app
+        run: docker compose -f production.yml build django
 
-      - name: Build the Stack
-        run: docker-compose -f production.yml push django
+      - name: Push app
+        run: docker compose -f production.yml push django
 
       - name: copy .env files
         uses: appleboy/scp-action@master
