@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  django:
+    depends_on:
+      - postgres
+      - redis
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+      cache_from:
+        [
+          "type=registry,ref=ghcr.io/sbkubric/supervacancies-django:buildcacheci",
+        ]
+      cache_to:
+        [
+          "type=registry,ref=ghcr.io/sbkubric/supervacancies-django:buildcacheci,mode=max",
+        ]
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: ghcr.io/sbkubric/supervacancies-postgres
+    volumes:
+      - ./.pgdata:/var/lib/postgresql/data
+      - ./.backups:/backups
+    env_file:
+      - ./.envs/.local/.postgres
