@@ -53,7 +53,7 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/aws/Dockerfile
-    image: ghcr.io/sbkubric/supervacancies-traefik
+    image: ghcr.io/sbkubric/supervacancies-awscli
     env_file:
       - ./.envs/.production/.django
     volumes:
