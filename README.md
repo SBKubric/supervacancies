@@ -1,6 +1,6 @@
 # SuperVacancies
 
-Sample vacancy management service. You can view the demo [here](supervacancies.sbkubric.com)
+Sample vacancy management service. You can view the demo [here](https://supervacancies.sbkubric.com)
 
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Black code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
