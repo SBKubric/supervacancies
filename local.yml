@@ -15,7 +15,7 @@ services:
       - postgres
       - mailhog
     volumes:
-      - .:/app:z
+      - .:/app
     env_file:
       - ./.envs/.local/.django
       - ./.envs/.local/.postgres
@@ -44,9 +44,9 @@ services:
     env_file:
       - ./.envs/.local/.django
     volumes:
-      - ./docs:/docs:z
-      - ./config:/app/config:z
-      - ./supervacancies:/app/supervacancies:z
+      - ./docs:/docs
+      - ./config:/app/config
+      - ./supervacancies:/app/supervacancies
     ports:
       - "9000:9000"
     command: /start-docs

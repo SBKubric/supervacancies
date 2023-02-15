@@ -57,4 +57,4 @@ services:
     env_file:
       - ./.envs/.production/.django
     volumes:
-      - postgres_data_backups:/backups:z
+      - postgres_data_backups:/backups
