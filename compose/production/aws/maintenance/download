@@ -20,4 +20,3 @@ export AWS_STORAGE_BUCKET_NAME="${BACKUP_AWS_STORAGE_BUCKET_NAME}"
 aws s3 cp s3://${AWS_STORAGE_BUCKET_NAME}/${1} ${BACKUP_DIR_PATH}/${1} --endpoint=${DJANGO_AWS_S3_ENDPOINT}
 
 message_success "Finished downloading ${1}."
-

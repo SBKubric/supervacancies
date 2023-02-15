@@ -1,7 +1,5 @@
 version: "3.8"
 
-name: "supervacancies"
-
 volumes:
   postgres_data: {}
   postgres_data_backups: {}
