@@ -2,9 +2,8 @@ name: Setup infrastracture
 
 on:
   workflow_dispatch:
-  on:
-    release:
-      types: [published]
+  release:
+    types: [published]
 
 concurrency: production
 
