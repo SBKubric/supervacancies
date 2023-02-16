@@ -3,6 +3,7 @@ from allauth.socialaccount.forms import SignupForm as SocialSignupForm
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+from .models import EmployerUser, ApplicantUser
 
 User = get_user_model()
 
@@ -26,17 +27,38 @@ class UserAdminCreationForm(admin_forms.UserCreationForm):
         }
 
 
-class UserSignupForm(SignupForm):
+class EmployerUserSignupForm(SignupForm):
     """
-    Form that will be rendered on a user sign up section/screen.
+    Form that will be rendered on a employer sign up section/screen.
     Default fields will be added automatically.
-    Check UserSocialSignupForm for accounts created from social.
+    Check EmployerUserSocialSignupForm for accounts created from social.
     """
 
+    class Meta:
+        model = EmployerUser
 
-class UserSocialSignupForm(SocialSignupForm):
+
+class ApplicantUserSignupForm(SignupForm):
+    """
+    Form that will be rendered on a applicant sign up section/screen.
+    Default fields will be added automatically.
+    Check ApplicantUserSocialSignupForm for accounts created from social.
+    """
+
+    class Meta:
+        model = EmployerUser
+
+
+class EmployerUserSocialSignupForm(SocialSignupForm):
     """
     Renders the form when user has signed up using social accounts.
     Default fields will be added automatically.
-    See UserSignupForm otherwise.
+    See EmployerUserSignupForm otherwise.
+    """
+
+class ApplicantUserSocialSignupForm(SocialSignupForm):
+    """
+    Renders the form when user has signed up using social accounts.
+    Default fields will be added automatically.
+    See ApplicantUserSignupForm otherwise.
     """
