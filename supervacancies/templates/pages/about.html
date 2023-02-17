@@ -1,1 +1,17 @@
 {% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="jumbotron">
+  <h1 class="display-4">{% translate "About" %}</h1>
+  <p class="lead">{% translate "Thank you for visiting!" %}</p>
+  <hr class="my-4">
+  <p>{% translate "This project was developed by Stanislav aka sbkubric Bogatskiy. If you have any questions, feel free to hit me about it!" %} 
+  <p class="lead">
+  <a class="btn btn-primary btn-lg" href="" role="button">Contact author</a>
+  </p>
+</div>
+
+
+{% endblock content %}

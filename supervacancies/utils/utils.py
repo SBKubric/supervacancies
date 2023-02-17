@@ -1,13 +1,19 @@
 from contextvars import ContextVar
 
+
+LOCAL_USER = ContextVar('local_user', default=None)
+
+
 def set_local_user(user):
-    context = ContextVar('local_user', default=None)
-    context.set(user)
+    LOCAL_USER.set(user)
 
 
 def get_local_user():
-    context = ContextVar('local_user', default=None)
-    return context.get()
+    return LOCAL_USER.get()
+
+
+def reset_local_user():
+    LOCAL_USER.set(None)
 
 
 

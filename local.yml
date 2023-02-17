@@ -18,7 +18,7 @@ services:
       - postgres
       - mailhog
     volumes:
-      - .:/app
+      - .:/app:z
     env_file:
       - ./.envs/.local/.django
       - ./.envs/.local/.postgres
@@ -37,6 +37,8 @@ services:
       - postgres_data_backups:/backups
     env_file:
       - ./.envs/.local/.postgres
+    ports:
+      - "5434:5432"
 
   docs:
     image: local_docs

@@ -15,6 +15,22 @@ class User(AbstractUser):
     name = CharField(_("Name of User"), blank=True, max_length=255)
     first_name = None  # type: ignore
     last_name = None  # type: ignore
+    
+    @property
+    def is_employer(self):
+        return self.has_perm('users.access_employer_area')
+
+    @property
+    def is_applicant(self):
+        return self.has_perm('users.access_applicant_area')
+
+    @property
+    def has_no_company(self):
+        return self.legalentity_set.count() == 0
+
+    @property
+    def has_no_cv(self):
+        return self.cv_set.count() == 0
 
     def get_absolute_url(self):
         """Get url for user's detail view.

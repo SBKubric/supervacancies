@@ -3,8 +3,10 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from container import get_local_user
 from .exceptions import LoginRequiredError
+from supervacancies.vacancies import enums
 from phonenumber_field.modelfields import PhoneNumberField
 from djmoney.models.fields import MoneyField
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 
@@ -34,27 +36,38 @@ class BaseModel(models.Model):
         super().save()
 
     class Meta:
-        proxy = True
+        abstract = True
 
 
 class LegalEntity(BaseModel):
-    title = models.CharField(_("Title"))
+    title = models.CharField(_("Title"), max_length=100)
     description = models.TextField(_("Description"), blank=True)
-    size = models.SmallIntegerField(_("Number of employees"), blank=True)
+    size = models.PositiveSmallIntegerField(
+            _("Number of employees"), 
+            default=enums.CompanySizes.MEDIUM, 
+            choices=enums.CompanySizes.choices)
     owner = models.ForeignKey(USER_MODEL, on_delete=models.CASCADE)
     phone = PhoneNumberField(_("Phone"), blank=True)
     email = models.EmailField(_("Email"), blank=True)
-    address1 = models.CharField(_("Address 1"), blank=True)
-    address2 = models.CharField(_("Address 2"), blank=True)
-    city = models.CharField(_("City"), blank=True)
-    postal_code = models.CharField(_("Postal code"), blank=True)
-    country = models.CharField(_("Country"), blank=True)
+    address1 = models.CharField(_("Address 1"), blank=True, max_length=255)
+    address2 = models.CharField(_("Address 2"), blank=True, max_length=255)
+    city = models.CharField(_("City"), blank=True, max_length=100)
+    postal_code = models.CharField(_("Postal code"), blank=True, max_length=50)
+    country = models.CharField(_("Country"), blank=True, max_length=100)
+
+    def __str__(self) -> str:
+        return str(self.title)
 
 
 class Vacancy(BaseModel):
-    title = models.CharField(_("Title"))
+    title = models.CharField(_("Title"), max_length=100)
+    job = models.ForeignKey('Job', on_delete=models.SET_NULL, null=True) # on delete set as "no job"
     description = models.TextField(_("Description"), blank=True)
-    status = models.CharField(_("Status"))
+    status = models.PositiveSmallIntegerField(
+        _("Status"), 
+        default=enums.VacancyStatuses.ACTIVE, 
+        choices=enums.VacancyStatuses.choices
+    )
     salary = MoneyField(
         _("Salary"),
         max_digits=14,
@@ -62,15 +75,24 @@ class Vacancy(BaseModel):
         default_currency="USD", # type: ignore
         blank=True,
     )
-    required_experience = models.SmallIntegerField(_("Years of experience"))
+    required_experience = models.PositiveSmallIntegerField(
+        _("Years of experience"),
+        default=enums.ExperienceRequirements.NO,
+        choices=enums.ExperienceRequirements.choices,
+    )
     employer = models.ForeignKey(USER_MODEL, on_delete=models.CASCADE)
     company = models.ForeignKey(LegalEntity, on_delete=models.CASCADE)
 
 
 class CV(BaseModel):
-    title = models.CharField(_("Title"))
+    title = models.CharField(_("Title"), max_length=100)
+    job = models.ForeignKey('Job', on_delete=models.SET_NULL, null=True) # on delete set as "no job"
     description = models.TextField(_("Description"), blank=True)
-    status = models.CharField(_("Status"))
+    status = models.PositiveSmallIntegerField(
+        _("Status"),
+        default=enums.CVStatuses.ACTIVE,
+        choices=enums.CVStatuses.choices,
+    )
     salary = MoneyField(
         _("Salary"),
         max_digits=14,
@@ -80,15 +102,39 @@ class CV(BaseModel):
     )
     phone = PhoneNumberField(_("Contact phone"))
     email = models.EmailField(_("Contact email"))
-    experience = models.TextField(_("Experience"))
+    experience = models.PositiveSmallIntegerField(
+        _("Years of experience"),
+        default=enums.ExperienceRequirements.NO,
+        choices=enums.ExperienceRequirements.choices
+    )
+    experience_description = models.TextField(_("Experience"))
     applicant = models.ForeignKey(USER_MODEL, on_delete=models.CASCADE)
 
 
 class Application(BaseModel):
-    status = models.CharField(_("Status"))
+    status = models.PositiveSmallIntegerField(
+        _("Status"),
+        default=enums.ApplicationStatuses.PENDING,
+        choices=enums.ApplicationStatuses.choices
+    )
     cover_letter = models.TextField(_("Cover letter"), blank=True)
     applicant = models.ForeignKey(USER_MODEL, on_delete=models.CASCADE)
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE)
     cv = models.ForeignKey(CV, on_delete=models.CASCADE)
+    cv_file = models.FileField(
+        _("Your CV file"),
+        upload_to="cv",
+        null=True,
+        )
 
+
+class Job(models.Model):
+    """
+    Dictionary with different jobs.
+    """
+
+    title = models.CharField(_("Job name"), max_length=100)
+
+    def __str__(self) -> str:
+        return str(self.title)
 

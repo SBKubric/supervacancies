@@ -137,7 +137,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "supervacancies.users.middleware.SetLocalUserMiddleware"
+    "supervacancies.users.middlewares.SetLocalUserMiddleware"
 ]
 
 # STATIC
@@ -303,3 +303,4 @@ from polog import config, file_writer
 
 config.add_handlers(file_writer()) # all logs go to stdout
 
+PAGINATE_BY = 25 # Global setting for number of elements per page

@@ -1,1 +1,16 @@
 {% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="jumbotron">
+  <h1 class="display-4">{% translate "Explore vacancies" %}</h1>
+  <p class="lead">{% translate "Find your dream job or ideal candidate!" %}</p>
+  <hr class="my-4">
+  <p>{% translate "This is a demo project. If you are interested in development of similar app you can contact" %} 
+  <a href="{% url "about" %}">{% translate "author" %}</a></p>
+  <p class="lead">
+  <a class="btn btn-primary btn-lg" href="{% url "vacancies:list" %}" role="button">Go to vacancies</a>
+  </p>
+</div>
+
+{% endblock %}
