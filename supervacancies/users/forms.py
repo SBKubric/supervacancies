@@ -3,7 +3,11 @@ from allauth.socialaccount.forms import SignupForm as SocialSignupForm
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
-from .models import EmployerUser, ApplicantUser
+from django.forms import fields
+from .enums import UserRoles
+from .exceptions import UserBadRoleError
+from django.utils.decorators import method_decorator
+from polog import log
 
 User = get_user_model()
 
@@ -27,38 +31,39 @@ class UserAdminCreationForm(admin_forms.UserCreationForm):
         }
 
 
-class EmployerUserSignupForm(SignupForm):
+@log("Saving user...", methods=('save',)) # type: ignore
+class UserSignupForm(SignupForm):
     """
-    Form that will be rendered on a employer sign up section/screen.
+    Form that will be rendered on a user sign up section/screen.
     Default fields will be added automatically.
-    Check EmployerUserSocialSignupForm for accounts created from social.
+    User is created based on role. 
+
+    If role has unexpected value or not provided, we log UserRoleBadError.
+
+    Check UserSocialSignupForm for accounts created from social.
     """
-
-    class Meta:
-        model = EmployerUser
-
-
-class ApplicantUserSignupForm(SignupForm):
-    """
-    Form that will be rendered on a applicant sign up section/screen.
-    Default fields will be added automatically.
-    Check ApplicantUserSocialSignupForm for accounts created from social.
-    """
-
-    class Meta:
-        model = EmployerUser
+    role = fields.TypedChoiceField(
+            choices=UserRoles.choices,
+            label=_("Choose your role"),
+            coerce=int
+        )
 
 
-class EmployerUserSocialSignupForm(SocialSignupForm):
+@log("Saving user...", methods=('save',)) # type: ignore
+class UserSocialSignupForm(SocialSignupForm):
     """
     Renders the form when user has signed up using social accounts.
-    Default fields will be added automatically.
-    See EmployerUserSignupForm otherwise.
+    Default fields will be added automatically. 
+
+    If role has unexpected value or not provided, we log UserRoleBadError.
+
+    
+    See UserSignupForm otherwise.
     """
 
-class ApplicantUserSocialSignupForm(SocialSignupForm):
-    """
-    Renders the form when user has signed up using social accounts.
-    Default fields will be added automatically.
-    See ApplicantUserSignupForm otherwise.
-    """
+    role = fields.TypedChoiceField(
+            choices=UserRoles.choices,
+            label=_("Choose your role"),
+            coerce=int
+        )
+

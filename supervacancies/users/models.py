@@ -2,9 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models import CharField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import UserManager, AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from typing import Any
 
 
 class User(AbstractUser):
@@ -33,78 +32,43 @@ class User(AbstractUser):
         ]
 
 
-class EmployerUserManager(UserManager):
+def set_applicant_group(user: User) -> None:
     """
-    User manager for employers.
+    Sets user permissions at sign up if user role selected as applicant.
     """
-    def create_user(self, username: str, email: str | None, password: str | None, **extra_fields: Any) -> User:
-        """Method for creation of user with applicant group permissions
-        Returns:
-            AbstractUser: User with employer group permissions
-        """
-        employer: User = super().create_user(username, email, password, **extra_fields)
-        
-        employers_group, _ = Group.objects.get_or_create(name="employers")
-        content_type = ContentType.objects.get_for_model(User)
-        employer_permission = Permission.objects.get(
-            codename = "access_employer_area",
-            content_type = content_type, 
-        )
+    if user.has_perm('users.access_applicant_area'):
+        return
 
-        if employer_permission not in employers_group.permissions.all():
-            employers_group.permissions.add(employer_permission)
+    applicants_group, _ = Group.objects.get_or_create(name="applicants")
 
-        employers_group.user_set.add(employer) # type: ignore
-        employers_group.save()
+    content_type = ContentType.objects.get_for_model(User)
+    applicant_permission = Permission.objects.get(
+        codename = "access_applicant_area",
+        content_type = content_type, 
+    )
 
-        return employer
+    if applicant_permission not in applicants_group.permissions.all():
+        applicants_group.permissions.add(applicant_permission)
     
+    user.groups.add(applicants_group) # type: ignore
 
 
-class ApplicantUserManager(UserManager):
+
+def set_employer_group(user: User) -> None:
     """
-    User manager for applicants.
+    Sets user permissions at sign up if user role is selected as employer
     """
-    def create_user(self, username: str, email: str | None, password: str | None, **extra_fields: Any) -> User:
-        """Method for creation user with applicant group permissions
-        Returns:
-            User: User with applicant group permissions
-        """
+    if user.has_perm('users.access_employer_area'):
+        return
+    employers_group, _ = Group.objects.get_or_create(name="employers")
+    content_type = ContentType.objects.get_for_model(User)
+    employer_permission = Permission.objects.get(
+        codename = "access_employer_area",
+        content_type = content_type, 
+    )
 
-        applicant: User = super().create_user(username, email, password, **extra_fields)
-        applicants_group, _ = Group.objects.get_or_create(name="applicants")
+    if employer_permission not in employers_group.permissions.all():
+        employers_group.permissions.add(employer_permission)
 
-        content_type = ContentType.objects.get_for_model(User)
-        applicant_permission = Permission.objects.get(
-            codename = "access_applicant_area",
-            content_type = content_type, 
-        )
+    user.groups.add(employers_group) # type: ignore
 
-        if applicant_permission not in applicants_group.permissions.all():
-            applicants_group.permissions.add(applicant_permission)
-
-        applicants_group.user_set.add(applicant) # type: ignore
-        applicants_group.save()
-
-        return applicant
-
-
-class EmployerUser(User):
-    """
-    User in the employers group
-    """
-
-    objects = EmployerUserManager()
-
-    class Meta:
-        proxy = True
-
-
-class ApplicantUser(User):
-    """
-    User in the applicants group
-    """
-    objects = ApplicantUserManager()
-
-    class Meta:
-        proxy = True

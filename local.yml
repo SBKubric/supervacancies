@@ -13,6 +13,7 @@ services:
       dockerfile: ./compose/local/django/Dockerfile
     image: supervacancies_local_django
     container_name: local_django
+    stdin_open: true
     depends_on:
       - postgres
       - mailhog
