@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from supervacancies import container
 
 
 class User(AbstractUser):
@@ -26,11 +27,15 @@ class User(AbstractUser):
 
     @property
     def has_no_company(self):
-        return self.legalentity_set.count() == 0
+        return self.legalentity_set.filter( # type: ignore
+                container.get_active_legal_entities_filter()
+            ).count() == 0
 
     @property
     def has_no_cv(self):
-        return self.cv_set.count() == 0
+        return self.cv_set.filter( # type: ignore
+                container.get_active_cv_filter()
+            ).count() == 0
 
     def get_absolute_url(self):
         """Get url for user's detail view.

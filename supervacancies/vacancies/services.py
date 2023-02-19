@@ -105,3 +105,11 @@ def archive_legal_entity(view: generic.View, form: ModelForm) -> models.LegalEnt
     return entity
 
 
+def check_user_has_no_companies(user: models.USER_MODEL) -> bool:
+    return user.legalentity_set.filter( # type: ignore
+            status=enums.LegalEntityStatuses.ACTIVE).count() == 0
+
+
+def check_user_has_no_cv(user: models.USER_MODEL) -> bool:
+    return user.cv_set.filter( # type: ignore
+            status=enums.CVStatuses.ACTIVE).count() == 0

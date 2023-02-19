@@ -184,6 +184,7 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "supervacancies.users.context_processors.allauth_settings",
+                "supervacancies.vacancies.context_processors.user_settings",
             ],
         },
     }

@@ -10,38 +10,59 @@ urlpatterns = [
     path("applicant/", views.ApplicantCockpitView.as_view(), name="applicant"),
     path("cv/create/", views.CreateCVView.as_view(), name="cv-create"),
     path(
-        "cv/update/<int:pk>/", 
+        "cv/<int:pk>/update/", 
         views.UpdateCVView.as_view(), 
         name="cv-update"
     ),
     path(
-        "cv/archive/<int:pk>/", 
+        "cv/<int:pk>/archive/", 
         views.ArchiveCVView.as_view(), 
         name="cv-archive"
     ),
-    path("vacancy/create/", views.CreateVacancyView.as_view(), name="vacancy-create"),
     path(
-        "vacancy/update/<int:pk>/", 
+        "cv/<int:pk/detail/",
+        views.DetailCVView.as_view(),
+        name="cv-detail"
+    ),
+    path(
+        "vacancy/create/", 
+        views.CreateVacancyView.as_view(), 
+        name="vacancy-create"
+    ),
+    path(
+        "vacancy/<int:pk>/update/", 
         views.UpdateVacancyView.as_view(), 
         name="vacancy-update"
     ),
     path(
-        "vacancy/archive/<int:pk>/", 
+        "vacancy/<int:pk>/",
+        views.DetailVacancyView.as_view(),
+        name="vacancy-detail"
+    ),
+    path(
+        "vacancy/<int:pk>/archive/", 
         views.ArchiveVacancyView.as_view(), 
         name="vacancy-archive"
     ),
-    path("company/register/", views.RegisterLegalEntityView.as_view(), name="company-register"),
     path(
-        "company/update/<int:pk>/", 
+        "company/register/", 
+        views.RegisterLegalEntityView.as_view(), 
+        name="company-register"
+    ),
+    path(
+        "company/<int:pk>/update/", 
         views.UpdateLegalEntityView.as_view(), 
         name="company-update"
     ),
     path(
-        "company/archive/<int:pk>/", 
+        "company/<int:pk>/archive/", 
         views.ArchiveLegalEntityView.as_view(), 
         name="company-archive"
     ),
-    path("vacancy/<int:vacancy_id>/application/submit/", views.SubmitApplicationView.as_view(), name="application-submit"),
+    path(
+        "vacancy/<int:vacancy_id>/submit-application/", 
+        views.SubmitApplicationView.as_view(), 
+        name="application-submit"),
     path(
         "application/<int:pk>/accept/", 
         views.AcceptApplicationView.as_view(), 
