@@ -1,12 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from container import get_local_user
+from supervacancies.container import get_local_user
 from .exceptions import LoginRequiredError
 from supervacancies.vacancies import enums
 from phonenumber_field.modelfields import PhoneNumberField
 from djmoney.models.fields import MoneyField
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 
@@ -42,6 +41,11 @@ class BaseModel(models.Model):
 class LegalEntity(BaseModel):
     title = models.CharField(_("Title"), max_length=100)
     description = models.TextField(_("Description"), blank=True)
+    status = models.PositiveSmallIntegerField(
+        _("Status"), 
+        default=enums.LegalEntityStatuses.ACTIVE,
+        choices=enums.LegalEntityStatuses.choices
+    )
     size = models.PositiveSmallIntegerField(
             _("Number of employees"), 
             default=enums.CompanySizes.MEDIUM, 
@@ -54,6 +58,13 @@ class LegalEntity(BaseModel):
     city = models.CharField(_("City"), blank=True, max_length=100)
     postal_code = models.CharField(_("Postal code"), blank=True, max_length=50)
     country = models.CharField(_("Country"), blank=True, max_length=100)
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=['status', 'id'], 
+                name='%(app_label)s_%(class)s_status'),
+        ]
 
     def __str__(self) -> str:
         return str(self.title)
@@ -82,6 +93,13 @@ class Vacancy(BaseModel):
     )
     employer = models.ForeignKey(USER_MODEL, on_delete=models.CASCADE)
     company = models.ForeignKey(LegalEntity, on_delete=models.CASCADE)
+    
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=['status', 'id'], 
+                name='%(app_label)s_%(class)s_status'),
+        ]
 
 
 class CV(BaseModel):
@@ -99,6 +117,7 @@ class CV(BaseModel):
         decimal_places=2,
         default_currency="USD", # type: ignore
         blank=True,
+        null=True,
     )
     phone = PhoneNumberField(_("Contact phone"))
     email = models.EmailField(_("Contact email"))
@@ -107,14 +126,26 @@ class CV(BaseModel):
         default=enums.ExperienceRequirements.NO,
         choices=enums.ExperienceRequirements.choices
     )
-    experience_description = models.TextField(_("Experience"))
+    experience_description = models.TextField(_("Experience"), blank=True)
     applicant = models.ForeignKey(USER_MODEL, on_delete=models.CASCADE)
+    cv_file = models.FileField(_("CV file"), null=True, blank=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=['status', 'id'], 
+                name='%(app_label)s_%(class)s_status'),
+        ]
 
 
 class Application(BaseModel):
+    state = models.PositiveBigIntegerField(
+        default=enums.ApplicationStates.PENDING,
+        choices=enums.ApplicationStates.choices,
+    )
     status = models.PositiveSmallIntegerField(
         _("Status"),
-        default=enums.ApplicationStatuses.PENDING,
+        default=enums.ApplicationStatuses.ACTIVE,
         choices=enums.ApplicationStatuses.choices
     )
     cover_letter = models.TextField(_("Cover letter"), blank=True)
@@ -126,6 +157,16 @@ class Application(BaseModel):
         upload_to="cv",
         null=True,
         )
+    
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=['status', 'id'], 
+                name='%(app_label)s_%(class)s_status'),
+            models.Index(
+                fields=['state', 'status', 'id'],
+                name='%(app_label)s_%(class)s_state',)
+        ]
 
 
 class Job(models.Model):

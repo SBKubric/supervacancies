@@ -1,4 +1,4 @@
-from container import set_local_user, reset_local_user
+from supervacancies.container import set_local_user, reset_local_user
 from django.contrib.auth import get_user
 
 

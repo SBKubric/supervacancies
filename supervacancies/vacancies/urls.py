@@ -41,14 +41,14 @@ urlpatterns = [
         views.ArchiveLegalEntityView.as_view(), 
         name="company-archive"
     ),
-    path("application/submit/", views.SubmitApplicationView.as_view(), name="application-submit"),
+    path("vacancy/<int:vacancy_id>/application/submit/", views.SubmitApplicationView.as_view(), name="application-submit"),
     path(
-        "application/accept/<int:pk>/", 
+        "application/<int:pk>/accept/", 
         views.AcceptApplicationView.as_view(), 
         name="application-accept"
     ),
     path(
-        "application/reject/<int:pk>/", 
+        "application/<int:pk>/reject/", 
         views.RejectApplicationView.as_view(), 
         name="application-reject"
     ),

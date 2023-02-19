@@ -11,10 +11,20 @@ class CompanySizes(IntegerChoices):
     CORPORATION = 5, _("More than 5000 people")
 
 
-class ApplicationStatuses(IntegerChoices):
+class ApplicationStates(IntegerChoices):
     PENDING = 0, _("Awaits response")
-    APPROVED = 1, _("Empoyer approved application")
+    ACCEPTED = 1, _("Empoyer accepted application")
     REJECTED = 2, _("Employer rejected application")
+
+
+class ApplicationStatuses(IntegerChoices):
+    ACTIVE = 0, _("Visible")
+    ARCHIVED = 1, _("In archive")
+
+
+class LegalEntityStatuses(IntegerChoices):
+    ACTIVE = 0, _("Visible")
+    ARCHIVED = 1, _("In archive")
 
 
 class CVStatuses(IntegerChoices):
