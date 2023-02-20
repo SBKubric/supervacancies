@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_filters %}
+
+{% block content %}
+
+<h1>{% translate "Create new CV" %}</h1>
+
+<form method="post" action="{% url "vacancies:cv-create" %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form|crispy }}
+ 
+  <div class="container row">
+    <div class="col">
+    {% include "vacancies/partials/back_btn.html" %}
+    </div>
+    <div class="col">
+    <button class="btn btn-success float-end" type="submit">{% translate "Create" %}</button>
+    </div>
+  </div>
+</form>
+{% endblock content %}

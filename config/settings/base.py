@@ -39,7 +39,7 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {"default": env.db("DATABASE_URL")}
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASES["default"]["ATOMIC_REQUESTS"] = False
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -73,10 +73,13 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
+    "djmoney",
+    "phonenumber_field",
 ]
 
 LOCAL_APPS = [
     "supervacancies.users",
+    "supervacancies.vacancies",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -134,6 +137,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "supervacancies.users.middlewares.SetLocalUserMiddleware"
 ]
 
 # STATIC
@@ -180,6 +184,7 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "supervacancies.users.context_processors.allauth_settings",
+                "supervacancies.vacancies.context_processors.user_settings",
             ],
         },
     }
@@ -295,3 +300,8 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
+from polog import config, file_writer 
+
+config.add_handlers(file_writer()) # all logs go to stdout
+
+PAGINATE_BY = 25 # Global setting for number of elements per page

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<h1>{% translate "Are you shure you want to archive Vacancy?" %}</h1>
+<form method="post" action="{% url "vacancies:vacancy-archive" object.id %}">
+  {% csrf_token %}
+<div class="container row">
+    <div class="col">
+    {% include "vacancies/partials/back_btn.html" %}
+    </div>
+    <div class="col">
+    <button class="btn btn-danger float-end" type="submit">{% translate "Archive" %}</button>
+    </div>
+  </div>
+</form>
+{% endblock content %}

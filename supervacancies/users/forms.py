@@ -3,6 +3,11 @@ from allauth.socialaccount.forms import SignupForm as SocialSignupForm
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+from django.forms import fields
+from .enums import UserRoles
+from .exceptions import UserBadRoleError
+from django.utils.decorators import method_decorator
+from polog import log
 
 User = get_user_model()
 
@@ -26,17 +31,39 @@ class UserAdminCreationForm(admin_forms.UserCreationForm):
         }
 
 
+@log("Saving user...", methods=('save',)) # type: ignore
 class UserSignupForm(SignupForm):
     """
     Form that will be rendered on a user sign up section/screen.
     Default fields will be added automatically.
+    User is created based on role. 
+
+    If role has unexpected value or not provided, we log UserRoleBadError.
+
     Check UserSocialSignupForm for accounts created from social.
     """
+    role = fields.TypedChoiceField(
+            choices=UserRoles.choices,
+            label=_("Choose your role"),
+            coerce=int
+        )
 
 
+@log("Saving user...", methods=('save',)) # type: ignore
 class UserSocialSignupForm(SocialSignupForm):
     """
     Renders the form when user has signed up using social accounts.
-    Default fields will be added automatically.
+    Default fields will be added automatically. 
+
+    If role has unexpected value or not provided, we log UserRoleBadError.
+
+    
     See UserSignupForm otherwise.
     """
+
+    role = fields.TypedChoiceField(
+            choices=UserRoles.choices,
+            label=_("Choose your role"),
+            coerce=int
+        )
+

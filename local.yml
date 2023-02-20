@@ -13,6 +13,7 @@ services:
       dockerfile: ./compose/local/django/Dockerfile
     image: supervacancies_local_django
     container_name: local_django
+    stdin_open: true
     depends_on:
       - postgres
       - mailhog
@@ -36,6 +37,8 @@ services:
       - postgres_data_backups:/backups
     env_file:
       - ./.envs/.local/.postgres
+    ports:
+      - "5434:5432"
 
   docs:
     image: local_docs

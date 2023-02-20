@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_filters %}
+
+{% block content %}
+
+<h1>{% translate "Submit new application" %}</h1>
+
+<form method="post" action="{% url "vacancies:application-submit" vacancy.id %}">
+  {% csrf_token %}
+
+  {{ form|crispy }}
+
+  <div class="container row">
+    <div class="col">
+    {% include "vacancies/partials/back_btn.html" %}
+    </div>
+    <div class="col">
+    <button class="btn btn-success float-end" type="submit">{% translate "Submit" %}</button>
+    </div>
+  </div>
+
+</form>
+{% endblock content %}

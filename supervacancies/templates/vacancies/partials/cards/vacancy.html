@@ -1,0 +1,18 @@
+{% load vacancy_tags %}
+
+{% set_vacancy_context vacancy %}
+<div class="card">
+  <h5 class="card-header">{{ vacancy.get_status_display }}</h5>
+  <div class="card-body">
+    <h5 class="card-title">{{ vacancy.title }}</h5>
+    <p class="card-text">{{ vacancy.description }}</p>
+    <a href="{% url "vacancies:vacancy-detail" vacancy.id %}" class="btn btn-primary">Show details</a>
+    {% if user.is_applicant %}
+      {% if no_application %}
+      <a href="{% url "vacancies:application-submit" vacancy.id %}" class="btn btn-success">Submit application</a>
+      {% else %}
+        <h6>Application status: {{ user_application.get_state_display }}</h6>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
