@@ -1,5 +1,6 @@
-from supervacancies.container import set_local_user, reset_local_user
 from django.contrib.auth import get_user
+
+from supervacancies.container import reset_local_user, set_local_user
 
 
 class SetLocalUserMiddleware:
@@ -12,4 +13,3 @@ class SetLocalUserMiddleware:
         response = self.get_response(request)
         reset_local_user()  # Need to clear current user to avoid clashes
         return response
-

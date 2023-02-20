@@ -1,7 +1,6 @@
 from contextvars import ContextVar
 
-
-LOCAL_USER = ContextVar('local_user', default=None)
+LOCAL_USER = ContextVar("local_user", default=None)
 
 
 def set_local_user(user):
@@ -14,6 +13,3 @@ def get_local_user():
 
 def reset_local_user():
     LOCAL_USER.set(None)
-
-
-

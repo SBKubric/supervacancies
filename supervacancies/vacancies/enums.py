@@ -38,9 +38,20 @@ class VacancyStatuses(IntegerChoices):
 
 
 class ExperienceRequirements(IntegerChoices):
-    NO = 0, _("No experience"),
-    JUNIOR = 1, _("From 6 month to 1 year"),
-    JUNIOR_PLUS = 2, _("From 1 year to 3 years"),
-    MIDDLE = 3, _("From 3 to 6 years"),
+    NO = (
+        0,
+        _("No experience"),
+    )
+    JUNIOR = (
+        1,
+        _("From 6 month to 1 year"),
+    )
+    JUNIOR_PLUS = (
+        2,
+        _("From 1 year to 3 years"),
+    )
+    MIDDLE = (
+        3,
+        _("From 3 to 6 years"),
+    )
     SENIOR = 4, _("More than 6 years")
-
