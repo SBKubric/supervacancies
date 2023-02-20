@@ -1,0 +1,14 @@
+<div class="card">
+  <h5 class="card-header">{{ entity.get_status_display }}</h5>
+  <div class="card-body">
+    <h5 class="card-title">{{ entity.title }}</h5>
+    <p class="card-text">{{ entity.description }}</p>
+    <a href="{% url "vacancies:company-detail" entity.id %}" class="btn btn-primary">Show details</a>
+    {% if user.is_employer and entity.owner_id == user.id %}
+      <a href="{% url "vacancies:company-update" entity.id %}" class="btn btn-primary">Update</a>
+      {% if not entity.status %}
+            <a href="{% url "vacancies:company-archive" entity.id %}" class="btn btn-danger">Archive</a>
+      {% endif %}
+    {% endif %}
+  </div>
+</div> 

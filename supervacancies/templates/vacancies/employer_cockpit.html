@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>My companies</h2>
+{% for entity in legal_entities %}
+  {% include "vacancies/partials/cards/legalentity.html" %}
+{% endfor %}
+
+<h2>My vacancies</h2>
+{% for vacancy in page_obj %}
+
+  {% include "vacancies/partials/cards/vacancy.html" %}
+
+{% endfor %}
+
+{% endblock content %}

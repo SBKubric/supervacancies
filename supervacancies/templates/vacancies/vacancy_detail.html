@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+  <h1>Details of {{ object.title }}</h1>
+
+  {# if user is owner of this vacancy, show him applications #}
+  {% if user.is_employer and object.employer_id == user.id %}
+    {% for application in object.application_set %}
+      {% include "vacancies/partials/cards/application.html" %}
+    {% endfor %}
+  {# end if user.is_employer #}
+  {% endif %}
+
+  {% if user_application %}
+    <h2>Application status: {{ user_application.get_state_display }}</h2>
+  {% endif %}
+{% endblock content %}

@@ -5,7 +5,7 @@
 
 <h1>{% translate "Update Company" %} {{ object.title }}</h1>
 
-<form method="post" action="{% url "vacancies:legal-entity-update" %}">
+<form method="post" action="{% url "vacancies:company-update" object.id %}">
 
   {% csrf_token %}
   {{ form|crispy }}

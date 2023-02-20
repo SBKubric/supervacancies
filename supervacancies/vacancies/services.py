@@ -50,7 +50,7 @@ def submit_application(view: generic.View, form: ModelForm) -> models.Applicatio
     form.save(commit=False)
     application = form.instance
     application.applicant = view.request.user
-    application.vacancy_id = view.request.POST.get('vacancy_id')
+    application.vacancy_id = view.kwargs.get('vacancy_id')
     application.save()
     return application
 
@@ -106,10 +106,30 @@ def archive_legal_entity(view: generic.View, form: ModelForm) -> models.LegalEnt
 
 
 def check_user_has_no_companies(user: models.USER_MODEL) -> bool:
+    """ Check that user hasn't created any legal entity yet """
     return user.legalentity_set.filter( # type: ignore
             status=enums.LegalEntityStatuses.ACTIVE).count() == 0
 
 
 def check_user_has_no_cv(user: models.USER_MODEL) -> bool:
+    """ Check that user hasn't created any cv yet """
+
     return user.cv_set.filter( # type: ignore
             status=enums.CVStatuses.ACTIVE).count() == 0
+
+
+def check_user_has_no_application(user: models.USER_MODEL, vacancy: models.Vacancy) -> bool:
+    """ Check that user hasn't submitted any applications for vacancy """
+    return user.application_set.filter(vacancy_id=vacancy.id).count() == 0 # type: ignore
+
+
+@atomic
+def create_vacancy(view: generic.View, form: ModelForm) -> models.Vacancy:
+    """ Employer creating vacancy """
+    form.save(commit = False)
+    vacancy: models.Vacancy = form.instance
+    vacancy.employer = view.request.user
+    vacancy.save()
+    return vacancy
+
+

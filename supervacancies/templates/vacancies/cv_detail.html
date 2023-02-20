@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{ object.title }}</h1>
+<h3>Description</h3>
+<p>{{ object.description }}</p>
+<h3>Status</h3>
+<p>{{ object.status }}</p>
+<h3>Name</h3>
+<p>{{ object.name }}</p>
+<h3>Experience</h3>
+<p>{{ object.get_experience_display }}</p>
+<h3>Experience description</h3>
+<p>{{ object.experience_description }}</p>
+<h3>Salary</h3>
+<p>{{ object.salary }}</p>
+<h3>CV file</h3>
+<p>{{ object.cv_file }}</p>
+<h3>Phone</h3>
+<p>{{ object.Phone }}</p>
+<h3>Email</h3>
+<p>{{ object.Email }}</p>
+
+{% if user.id == object.applicant_id %}
+  {% for application in object.application_set.all %}
+    {% include "vacancies/partials/cards/application.html %}
+  {% endfor %}
+
+  {% if object.status %}
+  <a href="{% url "vacancies:cv-archive" object.id %}" class="btn btn-danger">Archive</a>
+  {% else %}
+  <a href="{% url "vacancies:cv-update" object.id %}" class="btn btn-primary">Update</a>
+  {% endif %}
+{% endif %}
+
+{% endblock content %}

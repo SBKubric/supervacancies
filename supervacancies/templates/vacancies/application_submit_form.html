@@ -5,7 +5,8 @@
 
 <h1>{% translate "Submit new application" %}</h1>
 
-<form method="post" action="{% url "vacancies:application-submit" %}">
+<form method="post" action="{% url "vacancies:application-submit" vacancy.id %}">
+  {% csrf_token %}
 
   {{ form|crispy }}
 

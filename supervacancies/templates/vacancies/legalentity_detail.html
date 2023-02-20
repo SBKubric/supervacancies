@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{ object.title }}</h1>
+<h4>Description</h4>
+<p>{{ object.description }} </p>
+{% if user.is_employer and entity.owner_id == user.id %}
+      <a href="{% url "vacancies:company-update" entity.id %}" class="btn btn-primary">Update</a>
+      {% if not entity.status %}
+            <a href="{% url "vacancies:company-archive" entity.id %}" class="btn btn-danger">Archive</a>
+    {% endif %}
+{% endif %}
+
+
+{% endblock content %}

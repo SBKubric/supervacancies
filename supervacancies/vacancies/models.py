@@ -84,6 +84,7 @@ class Vacancy(BaseModel):
         max_digits=14,
         decimal_places=2,
         default_currency="USD", # type: ignore
+        null=True,
         blank=True,
     )
     required_experience = models.PositiveSmallIntegerField(
@@ -136,6 +137,9 @@ class CV(BaseModel):
                 fields=['status', 'id'], 
                 name='%(app_label)s_%(class)s_status'),
         ]
+    
+    def __str__(self):
+        return str(self.title)
 
 
 class Application(BaseModel):

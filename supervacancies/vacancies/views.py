@@ -6,6 +6,8 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.forms import ModelForm
 from typing import Any
+from . import enums
+from supervacancies.users import permissions
 from django.shortcuts import reverse
 
 
@@ -26,22 +28,22 @@ class VacanciesView(generic.ListView):
       return models.Vacancy.objects.all().prefetch_related()
 
 
-class SearchVacanciesView(generic.ListView):
-    paginate_by = PAGINATE_BY
-    model = models.Vacancy
-    template_name = "vacancies/vacancies.html"
-
-    def get_queryset(self) -> QuerySet:
-        return models.Vacancy.objects.all()
+class SearchVacanciesView(VacanciesView):
+   pass 
 
 
-class CreateVacancyView(generic.CreateView):
+class CreateVacancyView(permissions.UserIsEmployerMixin, generic.CreateView):
     template_name_suffix = "_create_form"
     model = models.Vacancy
     fields = ['company', 'title', 'job', 'description', 'required_experience', 'salary']
 
+    def form_valid(self, form: ModelForm) -> HttpResponse:
+        services.create_vacancy(self, form)
+        return HttpResponseRedirect(reverse("vacancies:employer"))
 
-class UpdateVacancyView(generic.UpdateView):
+
+
+class UpdateVacancyView(permissions.UserIsEmployerMixin, generic.UpdateView):
     model = models.Vacancy
     fields = ['title', 'job', 'description', 'required_experience', 'salary']
 
@@ -50,13 +52,13 @@ class DetailVacancyView(generic.DetailView):
     model = models.Vacancy
 
 
-class ArchiveVacancyView(generic.UpdateView):
+class ArchiveVacancyView(permissions.UserIsEmployerMixin, generic.UpdateView):
     template_name_suffix = "_check_archive"
     model = models.Vacancy
     fields = []
 
 
-class RegisterLegalEntityView(generic.CreateView):
+class RegisterLegalEntityView(permissions.UserIsEmployerMixin, generic.CreateView):
     template_name_suffix = "_register_form"
     model = models.LegalEntity
     fields = [
@@ -77,8 +79,13 @@ class RegisterLegalEntityView(generic.CreateView):
         return HttpResponseRedirect(reverse("vacancies:employer"))
 
 
-class UpdateLegalEntityView(generic.UpdateView):
+class DetailLegalEntityView(generic.DetailView):
     model = models.LegalEntity
+
+
+class UpdateLegalEntityView(permissions.UserIsEmployerMixin, generic.UpdateView):
+    model = models.LegalEntity
+    template_name_suffix = "_update_form"
     fields = [
         'title', 
         'description', 
@@ -93,7 +100,7 @@ class UpdateLegalEntityView(generic.UpdateView):
     ]
 
 
-class ArchiveLegalEntityView(generic.UpdateView):
+class ArchiveLegalEntityView(permissions.UserIsEmployerMixin, generic.UpdateView):
     template_name_suffix = "_check_archive"
     model = models.LegalEntity
     fields = []
@@ -103,7 +110,7 @@ class ArchiveLegalEntityView(generic.UpdateView):
         return HttpResponseRedirect(reverse("vacancies:employer"))
 
 
-class CreateCVView(generic.CreateView):
+class CreateCVView(permissions.UserIsApplicantMixin, generic.CreateView):
     template_name_suffix = "_create_form"
     model = models.CV
     fields = [
@@ -122,7 +129,7 @@ class CreateCVView(generic.CreateView):
         return HttpResponseRedirect(reverse("vacancies:applicant"))
 
 
-class UpdateCVView(generic.UpdateView):
+class UpdateCVView(permissions.UserIsApplicantMixin, generic.UpdateView):
     template_name_suffix = "_update_form"
     model = models.CV
     fields = [
@@ -143,7 +150,7 @@ class UpdateCVView(generic.UpdateView):
         )
 
 
-class ArchiveCVView(generic.UpdateView):
+class ArchiveCVView(permissions.UserIsApplicantMixin, generic.UpdateView):
     template_name_suffix = "_check_archive"
     model = models.CV
     fields = []
@@ -159,19 +166,25 @@ class DetailCVView(generic.DetailView):
     model = models.CV
 
 
-class SubmitApplicationView(generic.CreateView):
+class SubmitApplicationView(permissions.UserIsApplicantMixin, generic.CreateView):
     template_name_suffix = "_submit_form"
     model = models.Application
     fields = [
         'cover_letter',
-        'cv_file',
+        'cv',
     ]
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['vacancy'] = models.Vacancy.objects.get(id=self.kwargs.get('vacancy_id'))
+        return context
+
     def form_valid(self, form: ModelForm) -> HttpResponse:
         services.submit_application(self, form)
-        return super().form_valid(form)
+        return HttpResponseRedirect(reverse("vacancies:applicant"))
 
 
-class AcceptApplicationView(generic.UpdateView):
+class AcceptApplicationView(permissions.UserIsEmployerMixin, generic.UpdateView):
     template_name_suffix = "_check_accept"
     model = models.Application
     fields = []
@@ -183,7 +196,7 @@ class AcceptApplicationView(generic.UpdateView):
         )
 
 
-class RejectApplicationView(generic.UpdateView):
+class RejectApplicationView(permissions.UserIsEmployerMixin, generic.UpdateView):
     template_name_suffix = "_check_reject"
     model = models.Application
     fields = []
@@ -195,18 +208,27 @@ class RejectApplicationView(generic.UpdateView):
         )
 
 
-class EmployerCockpitView(generic.ListView):
+class EmployerCockpitView(permissions.UserIsEmployerMixin, generic.ListView):
     template_name = "vacancies/employer_cockpit.html"
     model = models.Vacancy
+    paginate_by = PAGINATE_BY
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['legal_entities'] = self.request.user.legalentity_set.all() # type: ignore
+        return context
 
     def get_queryset(self) -> QuerySet:
         return self.request.user.vacancy_set.all() # type: ignore
 
 
-class ApplicantCockpitView(generic.ListView):
+class ApplicantCockpitView(permissions.UserIsApplicantMixin, generic.ListView):
     template_name = "vacancies/applicant_cockpit.html"
     model = models.Application
+    paginate_by = PAGINATE_BY
 
     def get_queryset(self) -> QuerySet:
-        return self.request.user.application_set.all() # type: ignore
+        return self.request.user.application_set.filter( # type: ignore
+                    status=enums.ApplicationStatuses.ACTIVE
+                ).all() # type: ignore
 

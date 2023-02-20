@@ -1,0 +1,19 @@
+{% load application_tags %}
+
+{% set_application_context application %}
+<div class="card">
+  <h5 class="card-header">{{ application.get_status_display }}</h5>
+  <div class="card-body">
+    <h5 class="card-title">{{ application.get_state_display }}</h5>
+    <p class="card-text">{{ application.cover_letter }}</p>
+    <a href="{% url "vacancies:cv-detail" application.cv.id %}" class="btn btn-primary">Show CV</a>
+    {% if user.is_employer and application.vacancy.employer_id == user.id %}
+      {% if not application_state_accepted %}
+            <a href="{% url "vacancies:application-accept" application.id %}" class="btn btn-success">Accept</a>
+      {% endif %}
+      {% if not application_state_rejected %}
+      <a href="{% url "vacancies:application-reject" application.id %}" class="btn btn-danger">Reject</a>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>       

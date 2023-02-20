@@ -60,6 +60,11 @@ urlpatterns = [
         name="company-archive"
     ),
     path(
+        "company/<int:pk>/",
+        views.DetailLegalEntityView.as_view(),
+        name="company-detail"
+    ),
+    path(
         "vacancy/<int:vacancy_id>/submit-application/", 
         views.SubmitApplicationView.as_view(), 
         name="application-submit"),
