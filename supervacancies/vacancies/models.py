@@ -1,13 +1,14 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.utils import timezone
-from supervacancies.container import get_local_user
-from .exceptions import LoginRequiredError
-from supervacancies.vacancies import enums
-from phonenumber_field.modelfields import PhoneNumberField
-from djmoney.models.fields import MoneyField
 from django.utils.translation import gettext_lazy as _
+from djmoney.models.fields import MoneyField
+from phonenumber_field.modelfields import PhoneNumberField
 
+from supervacancies.container import get_local_user
+from supervacancies.vacancies import enums
+
+from .exceptions import LoginRequiredError
 
 USER_MODEL = get_user_model()
 
@@ -21,7 +22,7 @@ class BaseModel(models.Model):
     updated_by = models.ForeignKey(
         USER_MODEL, related_name="+", on_delete=models.CASCADE
     )
-    
+
     def save(self):
         """Overriding save method to set user that created and changed models"""
         user = get_local_user()
@@ -42,14 +43,15 @@ class LegalEntity(BaseModel):
     title = models.CharField(_("Title"), max_length=100)
     description = models.TextField(_("Description"), blank=True)
     status = models.PositiveSmallIntegerField(
-        _("Status"), 
+        _("Status"),
         default=enums.LegalEntityStatuses.ACTIVE,
-        choices=enums.LegalEntityStatuses.choices
+        choices=enums.LegalEntityStatuses.choices,
     )
     size = models.PositiveSmallIntegerField(
-            _("Number of employees"), 
-            default=enums.CompanySizes.MEDIUM, 
-            choices=enums.CompanySizes.choices)
+        _("Number of employees"),
+        default=enums.CompanySizes.MEDIUM,
+        choices=enums.CompanySizes.choices,
+    )
     owner = models.ForeignKey(USER_MODEL, on_delete=models.CASCADE)
     phone = PhoneNumberField(_("Phone"), blank=True)
     email = models.EmailField(_("Email"), blank=True)
@@ -62,8 +64,8 @@ class LegalEntity(BaseModel):
     class Meta:
         indexes = [
             models.Index(
-                fields=['status', 'id'], 
-                name='%(app_label)s_%(class)s_status'),
+                fields=["status", "id"], name="%(app_label)s_%(class)s_status"
+            ),
         ]
 
     def __str__(self) -> str:
@@ -72,18 +74,20 @@ class LegalEntity(BaseModel):
 
 class Vacancy(BaseModel):
     title = models.CharField(_("Title"), max_length=100)
-    job = models.ForeignKey('Job', on_delete=models.SET_NULL, null=True) # on delete set as "no job"
+    job = models.ForeignKey(
+        "Job", on_delete=models.SET_NULL, null=True
+    )  # on delete set as "no job"
     description = models.TextField(_("Description"), blank=True)
     status = models.PositiveSmallIntegerField(
-        _("Status"), 
-        default=enums.VacancyStatuses.ACTIVE, 
-        choices=enums.VacancyStatuses.choices
+        _("Status"),
+        default=enums.VacancyStatuses.ACTIVE,
+        choices=enums.VacancyStatuses.choices,
     )
     salary = MoneyField(
         _("Salary"),
         max_digits=14,
         decimal_places=2,
-        default_currency="USD", # type: ignore
+        default_currency="USD",  # type: ignore
         null=True,
         blank=True,
     )
@@ -94,18 +98,20 @@ class Vacancy(BaseModel):
     )
     employer = models.ForeignKey(USER_MODEL, on_delete=models.CASCADE)
     company = models.ForeignKey(LegalEntity, on_delete=models.CASCADE)
-    
+
     class Meta:
         indexes = [
             models.Index(
-                fields=['status', 'id'], 
-                name='%(app_label)s_%(class)s_status'),
+                fields=["status", "id"], name="%(app_label)s_%(class)s_status"
+            ),
         ]
 
 
 class CV(BaseModel):
     title = models.CharField(_("Title"), max_length=100)
-    job = models.ForeignKey('Job', on_delete=models.SET_NULL, null=True) # on delete set as "no job"
+    job = models.ForeignKey(
+        "Job", on_delete=models.SET_NULL, null=True
+    )  # on delete set as "no job"
     description = models.TextField(_("Description"), blank=True)
     status = models.PositiveSmallIntegerField(
         _("Status"),
@@ -116,7 +122,7 @@ class CV(BaseModel):
         _("Salary"),
         max_digits=14,
         decimal_places=2,
-        default_currency="USD", # type: ignore
+        default_currency="USD",  # type: ignore
         blank=True,
         null=True,
     )
@@ -125,19 +131,19 @@ class CV(BaseModel):
     experience = models.PositiveSmallIntegerField(
         _("Years of experience"),
         default=enums.ExperienceRequirements.NO,
-        choices=enums.ExperienceRequirements.choices
+        choices=enums.ExperienceRequirements.choices,
     )
     experience_description = models.TextField(_("Experience"), blank=True)
     applicant = models.ForeignKey(USER_MODEL, on_delete=models.CASCADE)
     cv_file = models.FileField(_("CV file"), null=True, blank=True)
-    
+
     class Meta:
         indexes = [
             models.Index(
-                fields=['status', 'id'], 
-                name='%(app_label)s_%(class)s_status'),
+                fields=["status", "id"], name="%(app_label)s_%(class)s_status"
+            ),
         ]
-    
+
     def __str__(self):
         return str(self.title)
 
@@ -150,7 +156,7 @@ class Application(BaseModel):
     status = models.PositiveSmallIntegerField(
         _("Status"),
         default=enums.ApplicationStatuses.ACTIVE,
-        choices=enums.ApplicationStatuses.choices
+        choices=enums.ApplicationStatuses.choices,
     )
     cover_letter = models.TextField(_("Cover letter"), blank=True)
     applicant = models.ForeignKey(USER_MODEL, on_delete=models.CASCADE)
@@ -160,16 +166,17 @@ class Application(BaseModel):
         _("Your CV file"),
         upload_to="cv",
         null=True,
-        )
-    
+    )
+
     class Meta:
         indexes = [
             models.Index(
-                fields=['status', 'id'], 
-                name='%(app_label)s_%(class)s_status'),
+                fields=["status", "id"], name="%(app_label)s_%(class)s_status"
+            ),
             models.Index(
-                fields=['state', 'status', 'id'],
-                name='%(app_label)s_%(class)s_state',)
+                fields=["state", "status", "id"],
+                name="%(app_label)s_%(class)s_state",
+            ),
         ]
 
 
@@ -182,4 +189,3 @@ class Job(models.Model):
 
     def __str__(self) -> str:
         return str(self.title)
-

@@ -2,6 +2,7 @@
 Base settings to build other settings files upon.
 """
 from pathlib import Path
+from polog import config, file_writer
 
 import environ
 
@@ -137,7 +138,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "supervacancies.users.middlewares.SetLocalUserMiddleware"
+    "supervacancies.users.middlewares.SetLocalUserMiddleware",
 ]
 
 # STATIC
@@ -300,8 +301,7 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
-from polog import config, file_writer 
 
-config.add_handlers(file_writer()) # all logs go to stdout
+config.add_handlers(file_writer())  # all logs go to stdout
 
-PAGINATE_BY = 25 # Global setting for number of elements per page
+PAGINATE_BY = 25  # Global setting for number of elements per page

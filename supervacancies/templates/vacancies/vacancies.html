@@ -29,17 +29,17 @@
           <button class="btn btn-outline-success" disabled>{% translate "Create vacancy" %}</button>
         {% else %}
           <a href="{% url "vacancies:vacancy-create" %}"
-             class="btn btn-outline-success" 
+             class="btn btn-outline-success"
              type="button">{% translate "Create vacancy" %}</a>
         {% endif %}
       {% endif %}
 
       {% if user.is_applicant %}
-      <a href="{% url "vacancies:cv-create" %}" 
+      <a href="{% url "vacancies:cv-create" %}"
          class="btn btn-outline-success" type="button">{% translate "Create CV" %}</a>
       {% endif %}
     </div>
-  </nav> 
+  </nav>
   {% endblock navbar %}
 
   {% if user_has_no_company and user.is_employer %}
@@ -47,7 +47,7 @@
       <h1 class="display-4">{% translate "Register" %}</h1>
       <p class="lead">{% translate "Your company in our service to start publish vacancies" %}</p>
       <hr class="my-4">
-      <p>{% translate "You can manage your companies in your" %} 
+      <p>{% translate "You can manage your companies in your" %}
         <a href="{% url "vacancies:employer" %}">{% translate "personal cabinet" %}</a>
       <p class="lead">
       <a class="btn btn-primary btn-lg" href="{% url "vacancies:company-register" %}" role="button">Register company</a>
@@ -61,7 +61,7 @@
       <h1 class="display-4">{% translate "Create your CV" %}</h1>
       <p class="lead">{% translate "in our service to start replying to vacancies!" %}</p>
       <hr class="my-4">
-      <p>{% translate "You can manage your CV's in your" %} 
+      <p>{% translate "You can manage your CV's in your" %}
         <a href="{% url "vacancies:applicant" %}">{% translate "personal cabinet" %}</a>
       <p class="lead">
       <a class="btn btn-primary btn-lg" href="{% url "vacancies:cv-create" %}" role="button">Create a CV</a>
@@ -69,14 +69,14 @@
     </div>
 
   {% endif %}
-  
+
   {% if not page_obj and user.is_employer and not user_has_no_company %}
-  
+
     <div class="jumbotron">
       <h1 class="display-4">{% translate "Create your first vacancy" %}</h1>
       <p class="lead">{% translate "and find your dream candidate!" %}</p>
       <hr class="my-4">
-      <p>{% translate "You can manage your vacancies's in your" %} 
+      <p>{% translate "You can manage your vacancies's in your" %}
         <a href="{% url "vacancies:employer" %}">{% translate "personal cabinet" %}</a>
       <p class="lead">
       <a class="btn btn-primary btn-lg" href="{% url "vacancies:vacancy-create" %}" role="button">Create a vacancy</a>
