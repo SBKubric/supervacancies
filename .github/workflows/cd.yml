@@ -72,6 +72,7 @@ jobs:
           key: ${{ secrets.SSH_SECRET_KEY }}
           script: |
             docker compose -f production.yml pull django
-            docker compose -f production.yml restart django -d
+            docker compose -f production.yml down
+            docker compose -f production.yml up -d
             docker compose -f production.yml run --rm django python manage.py migrate
             docker system prune -f
