@@ -2,9 +2,9 @@
 Base settings to build other settings files upon.
 """
 from pathlib import Path
-from polog import config, file_writer
 
 import environ
+from polog import config, file_writer
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # supervacancies/
