@@ -1,4 +1,4 @@
-FROM amazon/aws-cli:2.9.19
+FROM amazon/aws-cli:2.11.2
 
 COPY ./compose/production/aws/maintenance /usr/local/bin/maintenance
 COPY ./compose/production/postgres/maintenance/* /usr/local/bin/maintenance/
